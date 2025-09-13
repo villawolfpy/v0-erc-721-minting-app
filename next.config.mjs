@@ -6,14 +6,11 @@ const nextConfig = {
   images: { unoptimized: true },
 
   webpack: (config, { isServer }) => {
-    // 🔒 Evita que Next intente resolver módulos que no usamos en el browser
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      "pino-pretty": false,  // <-- clave para tu error
-      pino: false,           // opcional, por si algún paquete lo arrastra
+      "pino-pretty": false,
+      pino: false,
     };
-
-    // No necesitamos polyfills de Node en el cliente
     if (!isServer) {
       config.resolve.fallback = {
         ...(config.resolve.fallback || {}),
@@ -21,7 +18,6 @@ const nextConfig = {
         path: false,
       };
     }
-
     return config;
   },
 };
