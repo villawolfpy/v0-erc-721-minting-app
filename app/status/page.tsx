@@ -7,15 +7,23 @@ export default function StatusPage() {
   };
 
   return (
-    <main style={{padding: 24, fontFamily: "ui-sans-serif, system-ui"}}>
-      <h1 style={{fontSize: 24, marginBottom: 8}}>Status DApp</h1>
-      <p style={{opacity: .8, marginBottom: 16}}>
+    <main style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
+      <h1 style={{ fontSize: 24, marginBottom: 8 }}>Status DApp</h1>
+      <p style={{ opacity: 0.8, marginBottom: 16 }}>
         Compilado con estas variables públicas:
       </p>
-      <pre style={{background:"#111", color:"#0f0", padding:16, borderRadius:8, overflowX:"auto"}}>
+      <pre
+        style={{
+          background: "#111",
+          color: "#0f0",
+          padding: 16,
+          borderRadius: 8,
+          overflowX: "auto",
+        }}
+      >
         {JSON.stringify(ENV, null, 2)}
       </pre>
-      <p style={{marginTop: 16}}>
+      <p style={{ marginTop: 16 }}>
         Abre esta página en <code>/status</code> en tu dominio de Vercel.
       </p>
     </main>
