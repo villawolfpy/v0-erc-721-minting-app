@@ -1,7 +1,6 @@
 // app/layout.tsx
 import type React from "react";
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import Providers from "./providers";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -21,10 +20,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="font-sans antialiased">
-        <Suspense fallback={<div>Cargando...</div>}>
-          <Providers>{children}</Providers>
+        <Providers>
+          {children}
           <Toaster />
-        </Suspense>
+        </Providers>
       </body>
     </html>
   );

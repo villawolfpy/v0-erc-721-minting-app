@@ -25,14 +25,12 @@ export default function Providers({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ClientOnly fallback={<div className="min-h-screen flex items-center justify-center">Cargando...</div>}>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider theme={darkTheme()}>
-            <ToastProvider>{children}</ToastProvider>
-          </RainbowKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </ClientOnly>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider theme={darkTheme()}>
+          <ToastProvider>{children}</ToastProvider>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
