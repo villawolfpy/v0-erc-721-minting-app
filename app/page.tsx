@@ -58,8 +58,7 @@ export default function HomePage() {
       writeContract({
         address: config.carbonoAddress,
         abi: carbonoABI,
-        functionName: "buyTokens",
-        args: [BigInt(amount)],
+        functionName: "buyCarbono",
         value: totalPrice,
       })
 
@@ -81,7 +80,7 @@ export default function HomePage() {
         address: config.experienciaAddress,
         abi: experienciaABI,
         functionName: "mint",
-        args: [address!],
+        args: [BigInt(1)], // Mintear 1 NFT
       })
 
       toast.success("Transacción enviada", {
@@ -107,6 +106,10 @@ export default function HomePage() {
 
   const formatAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""
   const isLoading = isPending || isConfirming
+  
+  // Verificar si las direcciones de los contratos están configuradas
+  const isContractConfigured = config.carbonoAddress !== "0x0000000000000000000000000000000000000000" && 
+                              config.experienciaAddress !== "0x0000000000000000000000000000000000000000"
 
   return (
     <div className="min-h-screen bg-background">
@@ -130,6 +133,21 @@ export default function HomePage() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {!isContractConfigured && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 text-yellow-600">⚠️</div>
+              <div>
+                <h3 className="font-semibold text-yellow-800">Contratos no configurados</h3>
+                <p className="text-sm text-yellow-700">
+                  Las direcciones de los contratos inteligentes no están configuradas. 
+                  Por favor, configura las variables de entorno NEXT_PUBLIC_CARBONO y NEXT_PUBLIC_EXPERIENCIA.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {!isConnected ? (
           <div className="text-center py-12">
             <div className="h-16 w-16 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl mx-auto mb-4">
@@ -243,11 +261,11 @@ export default function HomePage() {
 
                     <Button
                       onClick={handleBuy}
-                      disabled={!quantity || Number(quantity) <= 0 || isLoading || !carbonoPrice}
+                      disabled={!quantity || Number(quantity) <= 0 || isLoading || !carbonoPrice || !isContractConfigured}
                       className="w-full"
                       size="lg"
                     >
-                      {isLoading ? "Procesando..." : `Comprar ${quantity || 0} CBO`}
+                      {!isContractConfigured ? "Contratos no configurados" : isLoading ? "Procesando..." : `Comprar ${quantity || 0} CBO`}
                     </Button>
                   </CardContent>
                 </Card>
@@ -281,11 +299,11 @@ export default function HomePage() {
 
                     <Button
                       onClick={mintExperiencia}
-                      disabled={isLoading || !experienciaPrice || !carbonoBalance || Number(carbonoBalance) < Number(experienciaPrice)}
+                      disabled={isLoading || !experienciaPrice || !carbonoBalance || Number(carbonoBalance) < Number(experienciaPrice) || !isContractConfigured}
                       className="w-full"
                       size="lg"
                     >
-                      {isLoading ? "Minteando..." : "Mintear NFT de Experiencia"}
+                      {!isContractConfigured ? "Contratos no configurados" : isLoading ? "Minteando..." : "Mintear NFT de Experiencia"}
                     </Button>
                   </CardContent>
                 </Card>
