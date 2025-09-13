@@ -1,13 +1,18 @@
-// app/admin/page.tsx
 "use client";
 
 import dynamic from "next/dynamic";
 
-// Si tu panel está en otra ruta, ajusta el import.
-// En tu repo suele ser "@/components/admin"
+// Configuración para evitar problemas de SSR
 const Admin = dynamic(() => import("@/components/admin"), {
   ssr: false,
-  loading: () => <div className="min-h-screen flex items-center justify-center">Cargando panel de administración...</div>,
+  loading: () => (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+        <p>Cargando panel de administración...</p>
+      </div>
+    </div>
+  ),
 });
 
 export default function AdminPage() {
