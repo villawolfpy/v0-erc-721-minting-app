@@ -3,6 +3,7 @@ export const config = {
   carbonoAddress: (process.env.NEXT_PUBLIC_CARBONO || "0x0000000000000000000000000000000000000000") as `0x${string}`,
   experienciaAddress: (process.env.NEXT_PUBLIC_EXPERIENCIA || "0x0000000000000000000000000000000000000000") as `0x${string}`,
   rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.sepolia.org",
+  infuraApiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY,
 } as const
 
 export const SEPOLIA_CHAIN_ID = 11155111

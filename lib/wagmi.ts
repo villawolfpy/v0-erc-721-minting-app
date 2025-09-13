@@ -1,18 +1,27 @@
 // lib/wagmi.ts
 import { createConfig, http } from "wagmi";
-import { sepolia } from "wagmi/chains";
+import { sepolia, mainnet } from "wagmi/chains";
 import { injected } from "wagmi/connectors";
+import { config } from "./config";
 
-// Usa el RPC público si no hay variable
-const RPC = process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.sepolia.org";
+// Configuración de RPC con Infura
+const getRpcUrl = (chainId: number) => {
+  if (config.infuraApiKey) {
+    return chainId === 1 
+      ? `https://mainnet.infura.io/v3/${config.infuraApiKey}`
+      : `https://sepolia.infura.io/v3/${config.infuraApiKey}`;
+  }
+  return config.rpcUrl || "https://rpc.sepolia.org";
+};
 
 export const wagmiConfig = createConfig({
-  chains: [sepolia],
+  chains: [sepolia, mainnet],
   // Conector "injected" (Metamask/Brave/etc.) — NO requiere WalletConnect ni projectId
   connectors: [injected({ shimDisconnect: true })],
   transports: {
-    [sepolia.id]: http(RPC),
+    [sepolia.id]: http(getRpcUrl(sepolia.id)),
+    [mainnet.id]: http(getRpcUrl(mainnet.id)),
   },
   // Next App Router hace SSR: esto evita warnings de hidratación
-  ssr: true,
+  ssr: false,
 });
