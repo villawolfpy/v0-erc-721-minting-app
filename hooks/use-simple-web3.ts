@@ -64,9 +64,9 @@ export function useSimpleWeb3() {
       }
     } catch (error) {
       console.error("Error loading balances:", error)
-      // Set demo balances if contracts are not deployed
-      setCarbonoBalance("100.5")
-      setExperienciaBalance("3")
+      // Show zero balances when contracts are unavailable or calls fail
+      setCarbonoBalance("0")
+      setExperienciaBalance("0")
     }
   }, [])
 
@@ -165,6 +165,7 @@ export function useSimpleWeb3() {
         address: CARBONO_TOKEN_ADDRESS,
         abi: CARBONO_ABI,
         functionName: "mint",
+        account: address as `0x${string}`,
         args: [address as `0x${string}`, tokenAmount],
         value: totalCost,
       })
@@ -251,6 +252,7 @@ export function useSimpleWeb3() {
         address: EXPERIENCIA_NFT_ADDRESS,
         abi: EXPERIENCIA_ABI,
         functionName: "mint",
+        account: address as `0x${string}`,
         args: [address as `0x${string}`],
       })
 

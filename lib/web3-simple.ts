@@ -3,7 +3,11 @@ import { sepolia, mainnet } from "viem/chains"
 
 // Get chain configuration from environment variables
 const chainId = process.env.NEXT_PUBLIC_CHAIN_ID ? Number.parseInt(process.env.NEXT_PUBLIC_CHAIN_ID) : 11155111
-const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || "https://sepolia.infura.io/v3/your-key"
+const rpcUrl =
+  process.env.NEXT_PUBLIC_RPC_URL ||
+  (process.env.NEXT_PUBLIC_INFURA_KEY
+    ? `https://sepolia.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_KEY}`
+    : "https://sepolia.infura.io/v3/your-key")
 
 // Chain configuration
 const chain = chainId === 1 ? mainnet : sepolia
