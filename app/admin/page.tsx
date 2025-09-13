@@ -1,7 +1,10 @@
-"use client"
+// app/admin/page.tsx
+"use client";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+// ... el resto de tus imports y tu componente
+
 
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { NetworkChecker } from "@/components/network-checker"
