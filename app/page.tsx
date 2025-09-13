@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi"
 import { parseEther } from "viem"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -111,25 +111,6 @@ export default function HomePage() {
   const isContractConfigured = config.carbonoAddress !== "0x0000000000000000000000000000000000000000" && 
                               config.experienciaAddress !== "0x0000000000000000000000000000000000000000"
 
-  // Estado de carga para evitar parpadeo
-  const [isClient, setIsClient] = useState(false)
-
-  useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  // Mostrar pantalla de carga mientras se hidrata
-  if (!isClient) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold mb-2">Carbono & Experiencia</h2>
-          <p className="text-muted-foreground">Cargando aplicación...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-background">

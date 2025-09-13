@@ -9,7 +9,6 @@ import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastProvider } from "@/components/ui/toast";
 import { wagmiConfig } from "@/lib/wagmi";
-import ClientOnly from "@/components/client-only";
 
 export default function Providers({ children }: { children: ReactNode }) {
   // React Query client (estable y con cache razonable)
@@ -19,6 +18,7 @@ export default function Providers({ children }: { children: ReactNode }) {
         defaultOptions: {
           queries: {
             staleTime: 60_000, // 1 min
+            retry: false, // Evitar reintentos que causen parpadeo
           },
         },
       })
@@ -27,7 +27,10 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={darkTheme()}>
+        <RainbowKitProvider 
+          theme={darkTheme()}
+          showRecentTransactions={false}
+        >
           <ToastProvider>{children}</ToastProvider>
         </RainbowKitProvider>
       </QueryClientProvider>

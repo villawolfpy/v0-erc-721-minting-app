@@ -2,6 +2,7 @@
 import type React from "react";
 import type { Metadata } from "next";
 import Providers from "./providers";
+import HydrationBoundary from "@/components/hydration-boundary";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -20,10 +21,12 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="font-sans antialiased">
-        <Providers>
-          {children}
-          <Toaster />
-        </Providers>
+        <HydrationBoundary>
+          <Providers>
+            {children}
+            <Toaster />
+          </Providers>
+        </HydrationBoundary>
       </body>
     </html>
   );
