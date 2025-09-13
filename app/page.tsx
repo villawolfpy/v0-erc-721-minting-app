@@ -1,109 +1,112 @@
 "use client"
 
 import { useState } from "react"
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi"
+import { parseEther } from "viem"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Icons } from "@/components/icons"
-
-declare global {
-  interface Window {
-    ethereum?: any
-  }
-}
+import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { carbonoABI } from "@/lib/abi/carbono"
+import { experienciaABI } from "@/lib/abi/experiencia"
+import { config } from "@/lib/config"
+import { toast } from "sonner"
 
 export default function HomePage() {
   const [quantity, setQuantity] = useState("")
-  const [isConnected, setIsConnected] = useState(false)
-  const [address, setAddress] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [carbonoBalance, setCarbonBalance] = useState("0")
-  const [experienciaBalance, setExperienciaBalance] = useState("0")
+  
+  const { address, isConnected } = useAccount()
+  const { writeContract, data: hash, isPending } = useWriteContract()
+  const { isLoading: isConfirming } = useWaitForTransactionReceipt({ hash })
 
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert("Por favor instala MetaMask para usar esta aplicación")
-      return
-    }
+  // Read contract data
+  const { data: carbonoBalance } = useReadContract({
+    address: config.carbonoAddress,
+    abi: carbonoABI,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+  })
 
-    try {
-      setIsLoading(true)
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      })
+  const { data: experienciaBalance } = useReadContract({
+    address: config.experienciaAddress,
+    abi: experienciaABI,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+  })
 
-      if (accounts.length > 0) {
-        setAddress(accounts[0])
-        setIsConnected(true)
-        // Simulate loading balances
-        setCarbonBalance("100")
-        setExperienciaBalance("5")
-      }
-    } catch (error) {
-      console.error("Error connecting wallet:", error)
-      alert("Error al conectar la wallet")
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const { data: carbonoPrice } = useReadContract({
+    address: config.carbonoAddress,
+    abi: carbonoABI,
+    functionName: "priceWeiPerToken",
+  })
 
-  const disconnectWallet = () => {
-    setIsConnected(false)
-    setAddress("")
-    setCarbonBalance("0")
-    setExperienciaBalance("0")
-  }
+  const { data: experienciaPrice } = useReadContract({
+    address: config.experienciaAddress,
+    abi: experienciaABI,
+    functionName: "priceInCBO",
+  })
 
   const buyCarbono = async (amount: string) => {
-    if (!isConnected) return
+    if (!isConnected || !carbonoPrice) return
 
     try {
-      setIsLoading(true)
-      // Simulate transaction
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const totalPrice = BigInt(amount) * BigInt(carbonoPrice)
+      
+      writeContract({
+        address: config.carbonoAddress,
+        abi: carbonoABI,
+        functionName: "buyTokens",
+        args: [BigInt(amount)],
+        value: totalPrice,
+      })
 
-      const newBalance = Number(carbonoBalance) + Number(amount)
-      setCarbonBalance(newBalance.toString())
-      alert(`¡Compra exitosa! Compraste ${amount} tokens CBO`)
+      toast.success("Transacción enviada", {
+        description: `Comprando ${amount} tokens CBO...`,
+      })
     } catch (error) {
-      alert("Error en la transacción")
-    } finally {
-      setIsLoading(false)
+      toast.error("Error en la transacción", {
+        description: error instanceof Error ? error.message : "Error desconocido",
+      })
     }
   }
 
   const mintExperiencia = async () => {
-    if (!isConnected || Number(carbonoBalance) < 10) return
+    if (!isConnected || !experienciaPrice) return
 
     try {
-      setIsLoading(true)
-      // Simulate minting
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      writeContract({
+        address: config.experienciaAddress,
+        abi: experienciaABI,
+        functionName: "mint",
+        args: [address!],
+      })
 
-      const newCarbonBalance = Number(carbonoBalance) - 10
-      const newNftBalance = Number(experienciaBalance) + 1
-
-      setCarbonBalance(newCarbonBalance.toString())
-      setExperienciaBalance(newNftBalance.toString())
-      alert("¡NFT minteado exitosamente!")
+      toast.success("Transacción enviada", {
+        description: "Minteando NFT de Experiencia...",
+      })
     } catch (error) {
-      alert("Error al mintear NFT")
-    } finally {
-      setIsLoading(false)
+      toast.error("Error al mintear NFT", {
+        description: error instanceof Error ? error.message : "Error desconocido",
+      })
     }
   }
 
-  const formatAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""
-
   const handleBuy = async () => {
     if (!quantity || Number(quantity) <= 0) {
+      toast.error("Cantidad inválida", {
+        description: "Por favor ingresa una cantidad válida",
+      })
       return
     }
     await buyCarbono(quantity)
     setQuantity("")
   }
+
+  const formatAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""
+  const isLoading = isPending || isConfirming
 
   return (
     <div className="min-h-screen bg-background">
@@ -120,31 +123,7 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              {isConnected && address ? (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-green-700">{formatAddress}</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={disconnectWallet}
-                    className="text-red-600 hover:text-red-700 bg-transparent"
-                  >
-                    Desconectar
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  onClick={connectWallet}
-                  disabled={isLoading}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Icons.wallet className="w-4 h-4 mr-2" />
-                  {isLoading ? "Conectando..." : "Conectar Wallet"}
-                </Button>
-              )}
+              <ConnectButton />
             </div>
           </div>
         </div>
@@ -187,7 +166,9 @@ export default function HomePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-green-600">{carbonoBalance}</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {carbonoBalance ? (Number(carbonoBalance) / 1e18).toFixed(2) : "0"}
+                  </p>
                   <p className="text-sm text-muted-foreground">Tokens Carbono</p>
                 </CardContent>
               </Card>
@@ -199,7 +180,9 @@ export default function HomePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-blue-600">{experienciaBalance}</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {experienciaBalance ? Number(experienciaBalance).toString() : "0"}
+                  </p>
                   <p className="text-sm text-muted-foreground">NFTs en tu wallet</p>
                 </CardContent>
               </Card>
@@ -224,7 +207,14 @@ export default function HomePage() {
                       <Icons.coins className="h-5 w-5" />
                       Comprar Tokens CBO
                     </CardTitle>
-                    <CardDescription>Compra tokens Carbono (CBO) con ETH. Precio: 0.001 ETH por token.</CardDescription>
+                    <CardDescription>
+                      Compra tokens Carbono (CBO) con ETH. 
+                      {carbonoPrice && (
+                        <span className="block mt-1">
+                          Precio: {(Number(carbonoPrice) / 1e18).toFixed(6)} ETH por token
+                        </span>
+                      )}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
@@ -240,18 +230,20 @@ export default function HomePage() {
                       />
                     </div>
 
-                    {quantity && Number(quantity) > 0 && (
+                    {quantity && Number(quantity) > 0 && carbonoPrice && (
                       <div className="p-4 bg-muted rounded-lg">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">ETH Requerido:</span>
-                          <span className="font-mono font-medium">{(Number(quantity) * 0.001).toFixed(6)} ETH</span>
+                          <span className="font-mono font-medium">
+                            {((Number(quantity) * Number(carbonoPrice)) / 1e18).toFixed(6)} ETH
+                          </span>
                         </div>
                       </div>
                     )}
 
                     <Button
                       onClick={handleBuy}
-                      disabled={!quantity || Number(quantity) <= 0 || isLoading}
+                      disabled={!quantity || Number(quantity) <= 0 || isLoading || !carbonoPrice}
                       className="w-full"
                       size="lg"
                     >
@@ -268,17 +260,28 @@ export default function HomePage() {
                       <Icons.image className="h-5 w-5" />
                       Mintear NFT de Experiencia
                     </CardTitle>
-                    <CardDescription>Usa tus tokens CBO para mintear un NFT único de Experiencia.</CardDescription>
+                    <CardDescription>
+                      Usa tus tokens CBO para mintear un NFT único de Experiencia.
+                      {experienciaPrice && (
+                        <span className="block mt-1">
+                          Costo: {(Number(experienciaPrice) / 1e18).toFixed(2)} CBO por NFT
+                        </span>
+                      )}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm text-muted-foreground">Costo: 10 CBO por NFT</p>
-                      <p className="text-sm text-muted-foreground">Tu balance: {carbonoBalance} CBO</p>
+                      <p className="text-sm text-muted-foreground">
+                        Costo: {experienciaPrice ? (Number(experienciaPrice) / 1e18).toFixed(2) : "Cargando..."} CBO por NFT
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Tu balance: {carbonoBalance ? (Number(carbonoBalance) / 1e18).toFixed(2) : "0"} CBO
+                      </p>
                     </div>
 
                     <Button
                       onClick={mintExperiencia}
-                      disabled={isLoading || Number(carbonoBalance) < 10}
+                      disabled={isLoading || !experienciaPrice || !carbonoBalance || Number(carbonoBalance) < Number(experienciaPrice)}
                       className="w-full"
                       size="lg"
                     >

@@ -3,6 +3,7 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Providers from "./providers";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <Suspense fallback={<div>Cargando...</div>}>
           <Providers>{children}</Providers>
+          <Toaster />
         </Suspense>
       </body>
     </html>
