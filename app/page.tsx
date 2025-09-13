@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -47,6 +48,9 @@ export default function HomePage() {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <Link href="/admin" className="text-sm font-medium hover:underline">
+                Admin
+              </Link>
               {isConnected && address ? (
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-2 px-3 py-2 bg-green-50 border border-green-200 rounded-lg">

@@ -165,6 +165,7 @@ export function useSimpleWeb3() {
         address: CARBONO_TOKEN_ADDRESS,
         abi: CARBONO_ABI,
         functionName: "mint",
+        account: address as `0x${string}`,
         args: [address as `0x${string}`, tokenAmount],
         value: totalCost,
       })
@@ -251,6 +252,7 @@ export function useSimpleWeb3() {
         address: EXPERIENCIA_NFT_ADDRESS,
         abi: EXPERIENCIA_ABI,
         functionName: "mint",
+        account: address as `0x${string}`,
         args: [address as `0x${string}`],
       })
 
