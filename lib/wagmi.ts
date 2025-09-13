@@ -1,19 +1,18 @@
-"use client"
+// lib/wagmi.ts
+import { createConfig, http } from "wagmi";
+import { sepolia } from "wagmi/chains";
+import { injected } from "wagmi/connectors";
 
-import { getDefaultConfig } from "@rainbow-me/rainbowkit"
-import { sepolia, mainnet } from "wagmi/chains"
-import { http } from "viem"
-import { config } from "./config"
+// Usa el RPC público si no hay variable
+const RPC = process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.sepolia.org";
 
-export const wagmiConfig = getDefaultConfig({
-  appName: "Carbono & Experiencia",
-  projectId: "2f05a7cac472eca42db5a3912f4e8c7c",
-  chains: [sepolia, mainnet],
+export const wagmiConfig = createConfig({
+  chains: [sepolia],
+  // Conector "injected" (Metamask/Brave/etc.) — NO requiere WalletConnect ni projectId
+  connectors: [injected({ shimDisconnect: true })],
   transports: {
-    [sepolia.id]: http(config.rpcUrl || "https://rpc.sepolia.org"),
-    [mainnet.id]: http(),
+    [sepolia.id]: http(RPC),
   },
-  ssr: false,
-})
-
-export const targetChain = config.chainId === 1 ? mainnet : sepolia
+  // Next App Router hace SSR: esto evita warnings de hidratación
+  ssr: true,
+});
