@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Providers from "./providers";
 import { Toaster } from "sonner";
 import "./globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
 
 export const metadata: Metadata = {
   title: "Carbono & Experiencia - Web3 DApp",
