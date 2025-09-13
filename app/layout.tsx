@@ -1,13 +1,8 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import dynamic from "next/dynamic"
+import Providers from "./providers"
 import "./globals.css"
-
-const Providers = dynamic(() => import("./providers"), {
-  ssr: false,
-  loading: () => null,
-})
 
 export const metadata: Metadata = {
   title: "Carbono & Experiencia - Web3 DApp",
