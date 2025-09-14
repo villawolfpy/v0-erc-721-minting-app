@@ -3,6 +3,7 @@ import type React from "react";
 import type { Metadata } from "next";
 import Providers from "./providers";
 import { Toaster } from "sonner";
+import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
