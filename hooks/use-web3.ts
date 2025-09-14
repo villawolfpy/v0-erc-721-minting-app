@@ -9,11 +9,8 @@ import { useToast } from "@/hooks/use-toast"
 // Contract ABIs
 const CARBONO_ABI = [
   {
-    inputs: [
-      { name: "to", type: "address" },
-      { name: "amount", type: "uint256" },
-    ],
-    name: "mint",
+    inputs: [],
+    name: "buyCarbonoToken20",
     outputs: [],
     stateMutability: "payable",
     type: "function",
@@ -27,7 +24,7 @@ const CARBONO_ABI = [
   },
   {
     inputs: [],
-    name: "price",
+    name: "priceWeiPerToken",
     outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
@@ -89,7 +86,7 @@ export function useWeb3() {
   const { data: tokenPrice = parseEther("0.001") } = useReadContract({
     address: config.carbonoAddress,
     abi: CARBONO_ABI,
-    functionName: "price",
+    functionName: "priceWeiPerToken",
     query: { enabled: !!config.carbonoAddress },
   })
 
@@ -128,7 +125,7 @@ export function useWeb3() {
   }, [error, toast])
 
   // Buy Carbono tokens
-  const buyCarbono = useCallback(
+  const buyCarbonoToken20 = useCallback(
     async (amount: string) => {
       if (!isConnected || !address) {
         toast({
@@ -156,8 +153,7 @@ export function useWeb3() {
         writeContract({
           address: config.carbonoAddress,
           abi: CARBONO_ABI,
-          functionName: "mint",
-          args: [address, tokenAmount],
+          functionName: "buyCarbonoToken20",
           value: totalCost,
         })
 
@@ -244,7 +240,7 @@ export function useWeb3() {
     experienciaBalance: experienciaBalance.toString(),
     tokenPrice: formatEther(tokenPrice),
     mintCost: formatEther(mintCost),
-    buyCarbono,
+    buyCarbonoToken20,
     mintExperiencia,
     formatAddress: address ? formatAddress(address) : "",
   }

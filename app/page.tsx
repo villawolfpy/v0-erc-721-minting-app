@@ -49,7 +49,7 @@ export default function HomePage() {
     functionName: "priceInCBO",
   })
 
-  const buyCarbono = async (amount: string) => {
+  const buyCarbonoToken20 = async (amount: string) => {
     if (!isConnected || !carbonoPrice) return
 
     try {
@@ -58,7 +58,7 @@ export default function HomePage() {
       writeContract({
         address: config.carbonoAddress,
         abi: carbonoABI,
-        functionName: "buyCarbono",
+        functionName: "buyCarbonoToken20",
         value: totalPrice,
       })
 
@@ -100,7 +100,7 @@ export default function HomePage() {
       })
       return
     }
-    await buyCarbono(quantity)
+    await buyCarbonoToken20(quantity)
     setQuantity("")
   }
 
