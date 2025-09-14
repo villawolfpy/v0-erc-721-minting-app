@@ -121,7 +121,7 @@ export function useSimpleWeb3() {
   }
 
   // Buy Carbono tokens
-  const buyCarbono = async (amount: string) => {
+  const buyCarbonoToken20 = async (amount: string) => {
     if (!isConnected || !address) {
       toast({
         title: "Error",
@@ -164,8 +164,7 @@ export function useSimpleWeb3() {
       const hash = await walletClient.writeContract({
         address: CARBONO_TOKEN_ADDRESS,
         abi: CARBONO_ABI,
-        functionName: "mint",
-        args: [address as `0x${string}`, tokenAmount],
+        functionName: "buyCarbonoToken20",
         value: totalCost,
       })
 
@@ -289,7 +288,7 @@ export function useSimpleWeb3() {
     experienciaBalance,
     connectWallet,
     disconnectWallet,
-    buyCarbono,
+    buyCarbonoToken20,
     mintExperiencia,
     formatAddress: address ? formatAddress(address) : "",
   }
