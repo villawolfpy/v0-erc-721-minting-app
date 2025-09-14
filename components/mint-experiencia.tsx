@@ -9,16 +9,12 @@ import { StatCard } from "@/components/stat-card"
 import { ImageIcon, Coins, Package, Wallet, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 import { publicClient, CARBONO_TOKEN_ADDRESS, EXPERIENCIA_NFT_ADDRESS, CARBONO_ABI, EXPERIENCIA_ABI, formatTokenAmount } from "@/lib/web3"
+import { useWallet } from "@/hooks/use-wallet"
 
-declare global {
-  interface Window {
-    ethereum?: any
-  }
-}
 
 export function MintExperiencia() {
+  const { address, isConnected } = useWallet()
   const [quantity, setQuantity] = useState("")
-  const [account, setAccount] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [needsApproval, setNeedsApproval] = useState(false)
   const [contractData, setContractData] = useState({
@@ -31,24 +27,10 @@ export function MintExperiencia() {
   })
 
   useEffect(() => {
-    checkConnection()
-  }, [])
-
-  const checkConnection = async () => {
-    if (typeof window !== "undefined" && window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts",
-        })
-        if (accounts.length > 0) {
-          setAccount(accounts[0])
-          loadContractData(accounts[0])
-        }
-      } catch (error) {
-        console.error("Error checking connection:", error)
-      }
+    if (isConnected && address) {
+      loadContractData(address)
     }
-  }
+  }, [isConnected, address])
 
   const loadContractData = async (address: string) => {
     try {
@@ -101,7 +83,7 @@ export function MintExperiencia() {
   const hasEnoughAllowance = Number.parseFloat(contractData.allowance) >= cboRequired
 
   const handleApprove = async () => {
-    if (!account || cboRequired <= 0) {
+    if (!address || cboRequired <= 0) {
       toast.error("Por favor conecta tu wallet e ingresa una cantidad válida")
       return
     }
@@ -115,7 +97,7 @@ export function MintExperiencia() {
           params: [
             {
               to: process.env.NEXT_PUBLIC_CARBONO,
-              from: account,
+              from: address,
               data: "0x", // Approval function call data would go here
             },
           ],
@@ -145,7 +127,7 @@ export function MintExperiencia() {
   }
 
   const handleMint = async () => {
-    if (!account || quantityNum <= 0) {
+    if (!address || quantityNum <= 0) {
       toast.error("Por favor conecta tu wallet e ingresa una cantidad válida")
       return
     }
@@ -169,7 +151,7 @@ export function MintExperiencia() {
           params: [
             {
               to: process.env.NEXT_PUBLIC_EXPERIENCIA,
-              from: account,
+              from: address,
               data: "0x", // Mint function call data would go here
             },
           ],
@@ -281,7 +263,7 @@ export function MintExperiencia() {
           {!hasEnoughAllowance && quantityNum > 0 && hasEnoughCBO && (
             <Button
               onClick={handleApprove}
-              disabled={!account || isLoading}
+              disabled={!address || isLoading}
               className="w-full bg-transparent"
               variant="outline"
             >
@@ -291,7 +273,7 @@ export function MintExperiencia() {
 
           <Button
             onClick={handleMint}
-            disabled={!account || !quantityNum || quantityNum <= 0 || !hasEnoughCBO || !hasEnoughAllowance || isLoading}
+            disabled={!address || !quantityNum || quantityNum <= 0 || !hasEnoughCBO || !hasEnoughAllowance || isLoading}
             className="w-full"
             size="lg"
           >
@@ -302,7 +284,7 @@ export function MintExperiencia() {
                 : `Mintear ${quantityNum || 0} NFT${quantityNum !== 1 ? "s" : ""}`}
           </Button>
 
-          {!account && (
+          {!address && (
             <div className="text-center text-sm text-muted-foreground">
               Por favor conecta tu wallet para mintear NFTs
             </div>
