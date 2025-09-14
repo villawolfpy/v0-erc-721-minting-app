@@ -1,7 +1,6 @@
 // app/providers.tsx
 "use client";
 
-import "@rainbow-me/rainbowkit/styles.css";
 import type { ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
