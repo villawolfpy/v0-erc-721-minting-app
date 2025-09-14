@@ -107,7 +107,7 @@ export function NetworkChecker() {
                   symbol: "ETH",
                   decimals: 18,
                 },
-                rpcUrls: ["https://rpc.sepolia.org"],
+                rpcUrls: [config.rpcUrl],
                 blockExplorerUrls: ["https://sepolia.etherscan.io"],
               },
             ],

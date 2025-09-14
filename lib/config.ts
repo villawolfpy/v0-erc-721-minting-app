@@ -2,9 +2,14 @@ export const config = {
   chainId: Number.parseInt(process.env.NEXT_PUBLIC_CHAIN_ID || "11155111"),
   carbonoAddress: (process.env.NEXT_PUBLIC_CARBONO || "0x0000000000000000000000000000000000000000") as `0x${string}`,
   experienciaAddress: (process.env.NEXT_PUBLIC_EXPERIENCIA || "0x0000000000000000000000000000000000000000") as `0x${string}`,
-  rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || "https://rpc.sepolia.org",
+  rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || (process.env.NEXT_PUBLIC_INFURA_API_KEY ? `https://sepolia.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}` : "https://rpc.sepolia.org"),
   infuraApiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY,
 } as const
+
+// Debug log for RPC URL
+console.log("Config RPC URL:", config.rpcUrl)
+console.log("NEXT_PUBLIC_RPC_URL env:", process.env.NEXT_PUBLIC_RPC_URL)
+console.log("NEXT_PUBLIC_INFURA_API_KEY env:", process.env.NEXT_PUBLIC_INFURA_API_KEY)
 
 export const SEPOLIA_CHAIN_ID = 11155111
 export const MAINNET_CHAIN_ID = 1
