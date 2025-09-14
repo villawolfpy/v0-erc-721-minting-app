@@ -6,11 +6,6 @@ export const config = {
   infuraApiKey: process.env.NEXT_PUBLIC_INFURA_API_KEY,
 } as const
 
-// Debug log for RPC URL
-console.log("Config RPC URL:", config.rpcUrl)
-console.log("NEXT_PUBLIC_RPC_URL env:", process.env.NEXT_PUBLIC_RPC_URL)
-console.log("NEXT_PUBLIC_INFURA_API_KEY env:", process.env.NEXT_PUBLIC_INFURA_API_KEY)
-
 export const SEPOLIA_CHAIN_ID = 11155111
 export const MAINNET_CHAIN_ID = 1
 
