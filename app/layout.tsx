@@ -22,7 +22,7 @@ export default function RootLayout({
       <head>
         <meta
           httpEquiv="Content-Security-Policy"
-          content="script-src 'self' 'unsafe-eval' https://*.coinbase.com https://*.walletconnect.com https://*.walletconnect.org; connect-src 'self' https://*.coinbase.com https://*.walletconnect.com https://*.walletconnect.org https://*.infura.io;"
+          content="script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.coinbase.com https://*.walletconnect.com https://*.walletconnect.org https://cdn.jsdelivr.net https://unpkg.com; connect-src 'self' https://*.coinbase.com https://*.walletconnect.com https://*.walletconnect.org https://*.infura.io wss://*.walletconnect.com wss://*.walletconnect.org ws://*.walletconnect.com ws://*.walletconnect.org; frame-src https://*.coinbase.com https://*.walletconnect.com https://*.walletconnect.org;"
         />
       </head>
       <body className="font-sans antialiased">
