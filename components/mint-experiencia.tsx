@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { StatCard } from "@/components/stat-card"
 import { ImageIcon, Coins, Package, Wallet, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
+import { publicClient, CARBONO_TOKEN_ADDRESS, EXPERIENCIA_NFT_ADDRESS, CARBONO_ABI, EXPERIENCIA_ABI, formatTokenAmount } from "@/lib/web3"
 
 declare global {
   interface Window {
@@ -21,11 +22,11 @@ export function MintExperiencia() {
   const [isLoading, setIsLoading] = useState(false)
   const [needsApproval, setNeedsApproval] = useState(false)
   const [contractData, setContractData] = useState({
-    nftPrice: "100", // Price in CBO tokens
+    nftPrice: "0",
     nftBalance: "0",
-    totalSupply: "150",
-    maxSupply: "10000",
-    cboBalance: "250.5",
+    totalSupply: "0",
+    maxSupply: "0",
+    cboBalance: "0",
     allowance: "0",
   })
 
@@ -51,15 +52,46 @@ export function MintExperiencia() {
 
   const loadContractData = async (address: string) => {
     try {
-      // Simulate loading user's NFT and CBO data
-      setContractData((prev) => ({
-        ...prev,
-        nftBalance: "3", // Mock NFT balance
-        cboBalance: "250.5", // Mock CBO balance
-        allowance: "50", // Mock allowance
-      }))
+      // Read real data from both contracts
+      const [nftBalance, cboBalance, nftPrice] = await Promise.all([
+        publicClient.readContract({
+          address: EXPERIENCIA_NFT_ADDRESS,
+          abi: EXPERIENCIA_ABI,
+          functionName: "balanceOf",
+          args: [address as `0x${string}`],
+        }),
+        publicClient.readContract({
+          address: CARBONO_TOKEN_ADDRESS,
+          abi: CARBONO_ABI,
+          functionName: "balanceOf",
+          args: [address as `0x${string}`],
+        }),
+        publicClient.readContract({
+          address: EXPERIENCIA_NFT_ADDRESS,
+          abi: EXPERIENCIA_ABI,
+          functionName: "mintCost",
+        }),
+      ])
+
+      setContractData({
+        nftBalance: (nftBalance as bigint).toString(),
+        cboBalance: formatTokenAmount(cboBalance as bigint),
+        nftPrice: formatTokenAmount(nftPrice as bigint),
+        totalSupply: "0", // TODO: Add totalSupply function to contract
+        maxSupply: "0", // TODO: Add maxSupply function to contract
+        allowance: "0", // TODO: Add allowance function to contract
+      })
     } catch (error) {
       console.error("Error loading contract data:", error)
+      // Fallback to zero values on error
+      setContractData({
+        nftBalance: "0",
+        cboBalance: "0",
+        nftPrice: "0",
+        totalSupply: "0",
+        maxSupply: "0",
+        allowance: "0",
+      })
     }
   }
 

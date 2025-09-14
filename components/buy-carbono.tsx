@@ -9,15 +9,16 @@ import { StatCard } from "@/components/stat-card"
 import { Icons } from "@/components/icons"
 import { useToast } from "@/components/ui/toast"
 import { useWallet } from "@/hooks/use-wallet"
+import { publicClient, CARBONO_TOKEN_ADDRESS, CARBONO_ABI, formatTokenAmount } from "@/lib/web3"
 
 export function BuyCarbono() {
   const { showToast } = useToast()
   const [quantity, setQuantity] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [contractData, setContractData] = useState({
-    price: "0.001", // Mock price in ETH
+    price: "0",
     balance: "0",
-    totalSupply: "1000000",
+    totalSupply: "0",
   })
 
   const { address, isConnected } = useWallet()
@@ -30,13 +31,34 @@ export function BuyCarbono() {
 
   const loadContractData = async (address: string) => {
     try {
-      // Simulate loading user's CBO balance
-      setContractData((prev) => ({
-        ...prev,
-        balance: "150.5", // Mock balance
-      }))
+      // Read real data from blockchain
+      const [balance, price] = await Promise.all([
+        publicClient.readContract({
+          address: CARBONO_TOKEN_ADDRESS,
+          abi: CARBONO_ABI,
+          functionName: "balanceOf",
+          args: [address as `0x${string}`],
+        }),
+        publicClient.readContract({
+          address: CARBONO_TOKEN_ADDRESS,
+          abi: CARBONO_ABI,
+          functionName: "price",
+        }),
+      ])
+
+      setContractData({
+        balance: formatTokenAmount(balance as bigint),
+        price: formatTokenAmount(price as bigint),
+        totalSupply: "0", // TODO: Add totalSupply function to contract
+      })
     } catch (error) {
       console.error("Error loading contract data:", error)
+      // Fallback to zero values on error
+      setContractData({
+        balance: "0",
+        price: "0",
+        totalSupply: "0",
+      })
     }
   }
 
