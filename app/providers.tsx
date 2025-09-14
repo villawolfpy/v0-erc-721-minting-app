@@ -33,8 +33,9 @@ export default function Providers({ children }: { children: ReactNode }) {
 
     // Log network errors
     const handleError = (event: ErrorEvent) => {
-      if (event.filename?.includes('coinbase') || event.message?.includes('coinbase')) {
-        console.error("Coinbase-related error:", event);
+      // Log general wallet connection errors
+      if (event.filename?.includes('wallet') || event.message?.includes('wallet')) {
+        console.error("Wallet connection error:", event);
       }
     };
 
@@ -50,7 +51,7 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider appInfo={{ appName: "Carbono & Experiencia" }} analytics={false}>
+        <RainbowKitProvider appInfo={{ appName: "Carbono & Experiencia" }}>
           <ToastProvider>{children}</ToastProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
