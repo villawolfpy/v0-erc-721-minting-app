@@ -1,5 +1,6 @@
 // lib/wagmi.ts
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { metaMaskWallet, walletConnectWallet, injectedWallet } from "@rainbow-me/rainbowkit/wallets";
 import { sepolia, mainnet } from "wagmi/chains";
 import { http } from "viem";
 import { config } from "./config";
@@ -13,4 +14,11 @@ export const wagmiConfig = getDefaultConfig({
     [mainnet.id]: http(),
   },
   ssr: false,
+  wallets: [
+    // Exclude Coinbase Wallet to avoid analytics errors
+    {
+      groupName: "Popular",
+      wallets: [metaMaskWallet, walletConnectWallet, injectedWallet],
+    },
+  ],
 });
