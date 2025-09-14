@@ -19,6 +19,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
+      <head>
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="script-src 'self' 'unsafe-eval' https://*.coinbase.com https://*.walletconnect.com https://*.walletconnect.org; connect-src 'self' https://*.coinbase.com https://*.walletconnect.com https://*.walletconnect.org https://*.infura.io;"
+        />
+      </head>
       <body className="font-sans antialiased">
         <Providers>
           {children}
