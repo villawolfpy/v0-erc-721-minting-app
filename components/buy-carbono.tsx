@@ -42,7 +42,7 @@ export function BuyCarbono() {
         publicClient.readContract({
           address: CARBONO_TOKEN_ADDRESS,
           abi: CARBONO_ABI,
-          functionName: "price",
+          functionName: "priceWeiPerToken",
         }),
       ])
 

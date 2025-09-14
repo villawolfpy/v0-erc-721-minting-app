@@ -53,7 +53,7 @@ export const CARBONO_ABI = [
   },
   {
     inputs: [],
-    name: "price",
+    name: "priceWeiPerToken",
     outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",
@@ -77,7 +77,7 @@ export const EXPERIENCIA_ABI = [
   },
   {
     inputs: [],
-    name: "mintCost",
+    name: "priceInCBO",
     outputs: [{ name: "", type: "uint256" }],
     stateMutability: "view",
     type: "function",

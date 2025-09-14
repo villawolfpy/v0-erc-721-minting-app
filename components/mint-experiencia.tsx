@@ -69,7 +69,7 @@ export function MintExperiencia() {
         publicClient.readContract({
           address: EXPERIENCIA_NFT_ADDRESS,
           abi: EXPERIENCIA_ABI,
-          functionName: "mintCost",
+          functionName: "priceInCBO",
         }),
       ])
 
