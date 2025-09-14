@@ -314,3 +314,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Additional styles for better layout and loading states */
+.loading-skeleton {
+  @apply animate-pulse bg-muted rounded;
+}
+
+.contract-data-loading {
+  @apply opacity-50 pointer-events-none;
+}
+
+.wallet-disconnected {
+  @apply opacity-75;
+}
+
+.wallet-disconnected .stat-card {
+  @apply border-dashed border-muted-foreground/50;
+}
